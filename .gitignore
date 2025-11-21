@@ -41,4 +41,8 @@ app-example
 # generated native folders
 /ios
 /android
+
+#Supabase
 .env
+
+.idea/
