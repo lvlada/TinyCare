@@ -1,112 +1,179 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useContext } from 'react';
+import { View, StyleSheet, Image} from 'react-native';
+import {
+  Avatar,
+  Text,
+  Button,
+  Surface,
+  List,
+  useTheme,
+} from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+//import { AuthContext } from '../../context/AuthContext'; // ako postoji
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+export default function ProfileScreen() {
+  const router = useRouter();
+  const theme = useTheme();
+  //const auth = useContext(AuthContext);
 
-export default function TabTwoScreen() {
+  // primer podataka; zameni stvarnim podacima iz state-a / api-ja
+  const user = {
+    name: 'Vladimir Lukić',
+    email: 'vladimir@example.com',
+    role: 'Parent', // ili 'BabySiter'
+    joined: 'Jan 8, 2025',
+  };
+
+  const handleEdit = () => {
+    //router.push('/(private)/settings'); // ili edit profil screen
+  };
+
+  const handleLogout = () => {
+    //if (auth && typeof auth.logout === 'function') auth.logout();
+    // zameni sa router.replace ako želiš da obrišeš history
+    //router.replace('/(public)/home');
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
+    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* Top surface with avatar/logo */}
+      <Surface style={styles.headerSurface}>
+        {/* pokušaj da učitaš avatar iz assets, fallback na Avatar.Icon ako nema */}
+        <View style={styles.avatarWrap}>
+          <Image
+            source={require('../../assets/images/baby_halo_logo.png')}
+            style={styles.avatarImage}
+            resizeMode="contain"
+          />
+        </View>
+
+        <View style={styles.headerText}>
+          <Text variant="headlineSmall" style={styles.name}>
+            {user.name}
+          </Text>
+          <Text variant="bodyMedium" style={styles.role}>
+            {user.role}
+          </Text>
+        </View>
+      </Surface>
+
+      {/* Info card */}
+      <Surface style={styles.infoCard}>
+        <List.Item
+          title="Email"
+          description={user.email}
+          left={(props) => <List.Icon {...props} icon="email" />}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
+        <List.Item
+          title="Role"
+          description={user.role}
+          left={(props) => <List.Icon {...props} icon="account-circle" />}
         />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+        <List.Item
+          title="Joined"
+          description={user.joined}
+          left={(props) => <List.Icon {...props} icon="calendar" />}
+        />
+      </Surface>
+
+
+      <View style={styles.actions}>
+        <Button
+          mode="outlined"
+          onPress={handleEdit}
+          style={styles.actionButton}
+          contentStyle={styles.actionContent}
+        >
+          Edit Profile
+        </Button>
+
+        <Button
+          mode="outlined"
+          //onPress={() => router.push('/(private)/settings')}
+          style={styles.actionButton}
+          contentStyle={styles.actionContent}
+        >
+          Settings
+        </Button>
+
+        <Button
+          mode="contained"
+          onPress={handleLogout}
+          style={[styles.actionButton, styles.logoutButton]}
+          contentStyle={styles.actionContent}
+        >
+          Logout
+        </Button>
+      </View>
+    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+    safe: {
+    flex: 1,
   },
-  titleContainer: {
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'flex-start',
+  },
+  headerSurface: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 16,
+    elevation: 4, // soft shadow
+    backgroundColor: '#F3E8FF', // pastel lavender-ish header
+    marginBottom: 20,
+  },
+  avatarWrap: {
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+    backgroundColor: '#FFF7ED', // pastel peach circle behind logo
+    elevation: 2,
+  },
+  avatarImage: {
+    width: 64,
+    height: 64,
+  },
+  headerText: {
+    flex: 1,
+  },
+  name: {
+    fontWeight: '700',
+    color: '#111827',
+  },
+  role: {
+    marginTop: 4,
+    color: '#6B7280',
+  },
+  infoCard: {
+    borderRadius: 12,
+    elevation: 2,
+    backgroundColor: '#FFFFFF',
+    marginBottom: 20,
+    overflow: 'hidden',
+  },
+  actions: {
+    marginTop: 8,
+    gap: 12, // newer RN supports gap; if not, use marginBottom on buttons
+  },
+  actionButton: {
+    borderRadius: 24,
+    marginBottom: 12,
+  },
+  actionContent: {
+    paddingVertical: 10,
+  },
+  logoutButton: {
+    backgroundColor: '#FFD6E0', // pastel pink for logout (noticeable)
   },
 });
