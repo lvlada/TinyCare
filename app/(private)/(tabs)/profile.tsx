@@ -43,7 +43,7 @@ export default function ProfileScreen() {
         {/* pokušaj da učitaš avatar iz assets, fallback na Avatar.Icon ako nema */}
         <View style={styles.avatarWrap}>
           <Image
-            source={require('../../assets/images/baby_halo_logo.png')}
+            source={require('../../../assets/images/baby_halo_logo.png')}
             style={styles.avatarImage}
             resizeMode="contain"
           />

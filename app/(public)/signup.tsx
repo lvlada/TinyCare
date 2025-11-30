@@ -99,8 +99,8 @@ const styles = StyleSheet.create({
 
   logoWrap: {
     alignItems: "center",
-    marginBottom: -20,         // 🔥 podiže karticu ka vrhu
-    marginTop: -20,            // 🔥 diže logo
+    marginBottom: -20,         
+    marginTop: -20,            
   },
 
   logo: {

@@ -12,7 +12,7 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     console.log({ role, email, password });
-    router.push("/(private)/dashboard");
+    router.push("/(private)/(tabs)/dashboard");
   };
 
   const handleSignup = () => {
@@ -81,7 +81,7 @@ export default function LoginScreen() {
       <View style={{ alignItems: 'center', marginTop: 16 }}>
         <Pressable onPress={handleSignup}>
           <Text style={{ color: "#083286ff", textDecorationLine: "underline", flex:1 }}>
-            Don't have an account, go to Signup
+            Dont have an account, go to Signup
           </Text>
         </Pressable>
       </View>
