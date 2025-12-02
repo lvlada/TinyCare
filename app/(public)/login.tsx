@@ -5,7 +5,6 @@ import {
   Button, 
   Surface, 
   useTheme,
-  // Snackbar više nije ovde
 } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContect";
@@ -39,7 +38,6 @@ export default function LoginScreen() {
         return; 
     }
 
-    // 4. Uspešna prijava
     router.replace("/(private)/(tabs)/home");
   };
 

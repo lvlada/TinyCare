@@ -6,10 +6,18 @@ import { useCallback, useEffect, useState } from "react";
 type DatabaseUser = {
   id: string;
   email: string;
-  first_name: string;
-  last_name: string;
+  full_name: string; 
+  city: string;       
+  type: 'parent' | 'babysitter'; 
   created_at?: string;
 } | null;
+
+
+type UpdateUserData = {
+    full_name?: string;
+    city?: string;
+    type?: 'parent' | 'babysitter';
+}
 
 export const useUser = () => {
   const [user, setUser] = useState<DatabaseUser>(null);
@@ -22,10 +30,11 @@ export const useUser = () => {
     console.log("🔍 fetchUser called with userId:", userId);
 
     if (!userId) {
-      console.log("❌ No userId, skipping fetch");
       setUser(null);
       return;
     }
+
+    setLoading(true); 
 
     try {
       const { data, error } = await supabase
@@ -34,59 +43,66 @@ export const useUser = () => {
         .eq("id", userId)
         .single();
 
-      console.log("📊 Query result:", { data, error });
-
       if (error) {
         console.error("❌ Error fetching user:", error);
         setUser(null);
       } else {
         console.log("✅ User fetched successfully:", data);
-        setUser(data);
+        setUser(data as DatabaseUser); 
       }
     } catch (err) {
       console.error("❌ Exception in fetchUser:", err);
       setUser(null);
+    } finally {
+        setLoading(false); 
     }
   }, [userId]);
 
-  const updateUser = async (firstName: string, lastName: string) => {
+  const updateUser = async (updates: UpdateUserData) => {
     if (!userId) {
-      return;
+      return { error: "Korisnik nije prijavljen." };
     }
+  
+    if (Object.keys(updates).length === 0) {
+        return { error: "Nema podataka za ažuriranje." };
+    }
+    
     setLoading(true);
-    if (!firstName || !lastName) {
-      return;
-    }
+
     try {
       const { data, error } = await supabase
         .from("users")
-        .update({
-          first_name: firstName,
-          last_name: lastName,
-        })
+        .update(updates) 
         .eq("id", userId)
         .select()
         .single();
 
-      if (!error) {
-        setUser(data);
+      if (error) {
+        console.error("❌ Error updating user:", error);
         setLoading(false);
+        return { error: error.message };
       } else {
+        console.log("✅ User updated successfully:", data);
+        setUser(data as DatabaseUser);
         setLoading(false);
+        return {}; 
       }
     } catch (e) {
+      console.error("❌ Exception in updateUser:", e);
       setLoading(false);
+      return { error: "Došlo je do neočekivane greške." };
     }
   };
 
-  useEffect(() => {
-    console.log("🔄 useEffect triggered, userId:", userId);
-    if (userId) {
-      fetchUser();
-    } else {
-      console.log("⚠️ No userId in useEffect");
-    }
-  }, [fetchUser, userId]);
+useEffect(() => {
+  if (!userId) {
+    setUser(null);
+    setLoading(false);
+    return;
+  }
+
+  fetchUser();
+}, [fetchUser, userId]);
 
   return { user, refetch: fetchUser, loading, updateUser };
 };
