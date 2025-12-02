@@ -1,18 +1,55 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Image, Text, Pressable} from "react-native";
-import { TextInput, Button, Surface, useTheme } from "react-native-paper";
+import { View, StyleSheet, Image, Text, Pressable, Alert } from "react-native";
+import { 
+  TextInput, 
+  Button, 
+  Surface, 
+  useTheme,
+  // Snackbar više nije ovde
+} from "react-native-paper";
 import { useRouter } from "expo-router";
+import { useAuth } from "@/context/AuthContect";
 
 export default function LoginScreen() {
   const router = useRouter();
   const theme = useTheme();
+  const { signIn } = useAuth();
+
   const [role, setRole] = useState<"parent" | "babysiter">("parent");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
+  // UKLONJENO: Stanja za Snackbar (visible, errorMessage, onDismissSnackBar)
 
-  const handleLogin = () => {
-    console.log({ role, email, password });
-    router.push("/(private)/(tabs)/dashboard");
+  const handleLogin = async () => {
+    
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    // 1. Klijentska validacija (Vraćen Alert.alert)
+    if (!trimmedEmail || !trimmedPassword) {
+      Alert.alert("Greška", "Popunite sva polja.");
+      return;
+    }
+    if (!trimmedEmail.includes("@")) {
+      Alert.alert("Greška", "Unesite validnu email adresu.");
+      return;
+    }
+
+    // 2. Supabase Prijava
+    const { error } = await signIn(trimmedEmail, trimmedPassword);
+
+    // 3. Rukovanje greškama sa servera (Vraćen Alert.alert)
+    if (error) {
+        console.error("Greška pri prijavi:", error);
+        
+        // Prikazujemo grešku korisniku
+        Alert.alert("Greška pri prijavi", error);
+        return; 
+    }
+
+    // 4. Uspešna prijava
+    router.replace("/(private)/(tabs)/home");
   };
 
   const handleSignup = () => {
@@ -85,6 +122,9 @@ export default function LoginScreen() {
           </Text>
         </Pressable>
       </View>
+      
+      {/* UKLONJENO: Snackbar komponenta */}
+      
     </View>
   );
 }

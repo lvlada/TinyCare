@@ -120,7 +120,6 @@ export default function DashboardScreen() {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
   );

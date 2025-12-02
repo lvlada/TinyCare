@@ -10,18 +10,18 @@ import {
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-//import { AuthContext } from '../../context/AuthContext'; // ako postoji
+import { useAuth } from '@/context/AuthContect'; 
 
 export default function ProfileScreen() {
   const router = useRouter();
   const theme = useTheme();
-  //const auth = useContext(AuthContext);
+  const { signOut } = useAuth();
 
-  // primer podataka; zameni stvarnim podacima iz state-a / api-ja
+
   const user = {
     name: 'Vladimir Lukić',
     email: 'vladimir@example.com',
-    role: 'Parent', // ili 'BabySiter'
+    role: 'Parent', 
     joined: 'Jan 8, 2025',
   };
 
@@ -29,10 +29,9 @@ export default function ProfileScreen() {
     //router.push('/(private)/settings'); // ili edit profil screen
   };
 
-  const handleLogout = () => {
-    //if (auth && typeof auth.logout === 'function') auth.logout();
-    // zameni sa router.replace ako želiš da obrišeš history
-    //router.replace('/(public)/home');
+
+  const handleLogout = async () => {
+    await signOut();
   };
 
   return (

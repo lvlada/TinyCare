@@ -1,12 +1,13 @@
-// app/(public)/home.tsx
 import React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { Text, Button, Surface, useTheme } from 'react-native-paper';
-import { useRouter } from 'expo-router';
+import { useRouter, Redirect } from 'expo-router';
+import { useAuth } from "@/context/AuthContect";
 
 export default function HomeScreen() {
   const router = useRouter();
   const theme = useTheme();
+
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
