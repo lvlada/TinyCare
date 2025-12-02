@@ -18,15 +18,11 @@ export default function LoginScreen() {
   const [role, setRole] = useState<"parent" | "babysiter">("parent");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
-  // UKLONJENO: Stanja za Snackbar (visible, errorMessage, onDismissSnackBar)
 
   const handleLogin = async () => {
-    
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
 
-    // 1. Klijentska validacija (Vraćen Alert.alert)
     if (!trimmedEmail || !trimmedPassword) {
       Alert.alert("Greška", "Popunite sva polja.");
       return;
@@ -36,14 +32,9 @@ export default function LoginScreen() {
       return;
     }
 
-    // 2. Supabase Prijava
     const { error } = await signIn(trimmedEmail, trimmedPassword);
 
-    // 3. Rukovanje greškama sa servera (Vraćen Alert.alert)
     if (error) {
-        console.error("Greška pri prijavi:", error);
-        
-        // Prikazujemo grešku korisniku
         Alert.alert("Greška pri prijavi", error);
         return; 
     }
@@ -122,8 +113,6 @@ export default function LoginScreen() {
           </Text>
         </Pressable>
       </View>
-      
-      {/* UKLONJENO: Snackbar komponenta */}
       
     </View>
   );
