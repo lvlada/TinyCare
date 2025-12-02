@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, StyleSheet } from "react-native";
 import {
   Text,
@@ -12,15 +12,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
 import { useAuth } from "@/context/AuthContect";
+import { useAppTheme } from "@/context/ThemeContext";
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const theme = useTheme();
   const { signOut } = useAuth();
+  const theme = useTheme();
 
-  const [isDarkTheme, setIsDarkTheme] = useState(theme.dark);
-
-  const toggleTheme = () => setIsDarkTheme((prev) => !prev);
+  const { isDarkTheme, toggleTheme } = useAppTheme();
 
   const handleLogout = async () => {
     await signOut();
@@ -30,18 +29,20 @@ export default function SettingsScreen() {
     router.push("/(private)/profile");
   };
 
+  const themedStyles = getThemedStyles(theme);
+
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.colors.background }]}>
-      <View style={styles.container}>
+    <SafeAreaView style={[themedStyles.safe, { backgroundColor: theme.colors.background }]}>
+      <View style={themedStyles.container}>
         <Text
           variant="headlineMedium"
-          style={[styles.title, { color: theme.colors.onBackground }]}
+          style={[themedStyles.title, { color: theme.colors.onBackground }]}
         >
           Podešavanja
         </Text>
 
         {/* Tema */}
-        <Surface style={styles.card}>
+        <Surface style={[themedStyles.card, { backgroundColor: theme.colors.surface }]}>
           <List.Item
             title="Tamna Tema (Dark Mode)"
             description="Prebaci se na svetlu ili tamnu temu"
@@ -49,6 +50,7 @@ export default function SettingsScreen() {
               <List.Icon
                 {...props}
                 icon={isDarkTheme ? "moon-waning-gibbous" : "white-balance-sunny"}
+                color={theme.colors.primary}
               />
             )}
             right={() => (
@@ -58,31 +60,40 @@ export default function SettingsScreen() {
                 color={theme.colors.primary}
               />
             )}
+            style={themedStyles.listItem}
+            titleStyle={{ color: theme.colors.onSurface }}
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
         </Surface>
 
-        {/* Ostale opcije */}
-        <Surface style={styles.card}>
+        <Surface style={[themedStyles.card, { backgroundColor: theme.colors.surface }]}>
           <List.Item
             title="Obaveštenja"
             description="Upravljajte postavkama notifikacija"
-            left={(props) => <List.Icon {...props} icon="bell-outline" />}
+            left={(props) => <List.Icon {...props} icon="bell-outline" color={theme.colors.onSurfaceVariant} />}
+            style={themedStyles.listItem}
+            titleStyle={{ color: theme.colors.onSurface }}
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
 
           <List.Item
             title="Sigurnost"
             description="Promena lozinke i biometrija"
-            left={(props) => <List.Icon {...props} icon="lock-outline" />}
+            left={(props) => <List.Icon {...props} icon="lock-outline" color={theme.colors.onSurfaceVariant} />}
+            style={themedStyles.listItem}
+            titleStyle={{ color: theme.colors.onSurface }}
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant  }}
           />
         </Surface>
 
-        {/* Donja dugmad */}
-        <View style={styles.footer}>
+        <View style={themedStyles.footer}>
           <Button
             mode="contained"
             onPress={handleLogout}
-            style={[styles.button, styles.logoutButton]}
-            contentStyle={styles.buttonContent}
+            style={themedStyles.button} 
+            contentStyle={themedStyles.buttonContent}
+            buttonColor={theme.colors.error} 
+            textColor={theme.colors.onError} 
           >
             Logout
           </Button>
@@ -90,8 +101,10 @@ export default function SettingsScreen() {
           <Button
             mode="outlined"
             onPress={handleBack}
-            style={[styles.button, styles.backButton]}
-            contentStyle={styles.buttonContent}
+            style={themedStyles.button} 
+            contentStyle={themedStyles.buttonContent}
+            textColor={theme.colors.onBackground}u
+            theme={{ colors: { outline: theme.colors.outline } }} 
           >
             Back
           </Button>
@@ -101,48 +114,50 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    padding: 20,
-  },
 
-  title: {
-    marginBottom: 20,
-    fontWeight: "700",
-  },
+const getThemedStyles = (theme) => StyleSheet.create({
+    safe: {
+        flex: 1,
+    },
+    container: {
+        flex: 1,
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 20,
+    },
+    title: {
+        marginBottom: 16,
+        fontWeight: "700",
+    },
 
-  card: {
-    borderRadius: 14,
-    elevation: 2,
-    marginBottom: 20,
-  },
+    card: {
+        borderRadius: 14,
+        elevation: 2,
+        shadowColor: theme.colors.shadow,
+        marginBottom: 16,
+        overflow: "hidden",
+    },
 
-  footer: {
-    marginTop: "auto",
-    alignItems: "center",
-    gap: 14,
-    paddingBottom: 20,
-  },
+    listItem: {
+        paddingVertical: 8,
+        paddingHorizontal: 6,
+    },
 
-  button: {
-    width: "50%",
-    maxWidth: 300,
-    borderRadius: 26,
-  },
+    footer: {
+        marginTop: "auto",
+        alignItems: "center",
+        paddingBottom: 20,
+    },
 
-  buttonContent: {
-    paddingVertical: 10,
-  },
+    button: {
+        width: "50%",
+        maxWidth: 360,
+        borderRadius: 26,
+        marginBottom: 12,
+    },
 
-  logoutButton: {
-    backgroundColor: "#FF5252",
-  },
-
-  backButton: {
-    borderColor: "#B0BEC5",
-  },
+    buttonContent: {
+        paddingVertical: 10,
+    },
+    
 });

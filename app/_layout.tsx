@@ -1,26 +1,38 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import "react-native-reanimated";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import AuthProvider from '@/context/AuthContect';
+import AuthProvider from "@/context/AuthContect";
+import { ThemeProvider, useAppTheme } from "@/context/ThemeContext";
+import { Provider as PaperProvider } from "react-native-paper";
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+function LayoutWrapper() {
+
+  const { theme } = useAppTheme();
 
   return (
-    <AuthProvider>
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <PaperProvider theme={theme}>
       <Stack>
-        <Stack.Screen 
-        name="(public)" 
-        options={{ headerShown: false }}
-         />
-        <Stack.Screen name="(private)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(public)"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="(private)"
+          options={{ headerShown: false }}
+        />
       </Stack>
       <StatusBar style="auto" />
-    </ThemeProvider>
+    </PaperProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <ThemeProvider>
+        <LayoutWrapper />
+      </ThemeProvider>
     </AuthProvider>
   );
 }

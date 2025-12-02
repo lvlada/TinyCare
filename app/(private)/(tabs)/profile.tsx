@@ -27,33 +27,28 @@ export default function ProfileScreen() {
     await signOut();
   };
 
+
+  const themedStyles = getThemedStyles(theme);
+
   if (userLoading) {
     return (
-      <View
-        style={[
-          styles.loadingContainer,
-          { backgroundColor: theme.colors.background },
-        ]}
-      >
+      <View style={themedStyles.loadingContainer}>
         <ActivityIndicator
           animating={true}
           size="large"
           color={theme.colors.primary}
         />
-        <Text style={{ marginTop: 10 }}>Učitavanje profila...</Text>
+        <Text style={{ marginTop: 10, color: theme.colors.onSurfaceVariant }}>
+          Učitavanje profila...
+        </Text>
       </View>
     );
   }
 
   if (!user) {
     return (
-      <View
-        style={[
-          styles.loadingContainer,
-          { backgroundColor: theme.colors.background },
-        ]}
-      >
-        <Text>
+      <View style={themedStyles.loadingContainer}>
+        <Text style={{ color: theme.colors.onSurface }}>
           Korisnički podaci nisu dostupni. Pokušajte ponovo ili se ponovo
           prijavite.
         </Text>
@@ -61,6 +56,7 @@ export default function ProfileScreen() {
           mode="contained"
           onPress={handleLogout}
           style={{ marginTop: 20 }}
+          buttonColor={theme.colors.error}
         >
           Odjava
         </Button>
@@ -79,61 +75,67 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.safe, { backgroundColor: theme.colors.background }]}
-    >
-      <View
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-      >
-        <Surface style={styles.headerSurface}>
-          <View style={styles.avatarWrap}>
+    <SafeAreaView style={themedStyles.safe}>
+      <View style={themedStyles.container}>
+        <Surface style={themedStyles.headerSurface} elevation={2}>
+          <View style={themedStyles.avatarWrap}>
             <Image
               source={require("../../../assets/images/baby_halo_logo.png")}
-              style={styles.avatarImage}
+              style={themedStyles.avatarImage}
               resizeMode="contain"
             />
           </View>
 
-          <View style={styles.headerText}>
-            <Text variant="headlineSmall" style={styles.name}>
+          <View style={themedStyles.headerText}>
+            <Text variant="headlineSmall" style={themedStyles.name}>
               {profile.name}
             </Text>
-            <Text variant="bodyMedium" style={styles.role}>
+            <Text variant="bodyMedium" style={themedStyles.role}>
               {profile.role}
             </Text>
           </View>
         </Surface>
 
-        {/* Info card */}
-        <Surface style={styles.infoCard}>
+
+        <Surface style={themedStyles.infoCard} elevation={2}>
           <List.Item
             title="Email"
             description={profile.email}
-            left={(props) => <List.Icon {...props} icon="email" />}
+            left={(props) => <List.Icon {...props} icon="email" color={theme.colors.primary} />}
+            titleStyle={{ color: theme.colors.onSurface }}
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
           <List.Item
             title="Role"
             description={profile.role}
-            left={(props) => <List.Icon {...props} icon="account-circle" />}
+            left={(props) => <List.Icon {...props} icon="account-circle" color={theme.colors.primary} />}
+            titleStyle={{ color: theme.colors.onSurface }}
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
           <List.Item
             title="Joined"
             description={profile.joined}
-            left={(props) => <List.Icon {...props} icon="calendar" />}
+            left={(props) => <List.Icon {...props} icon="calendar" color={theme.colors.primary} />}
+            titleStyle={{ color: theme.colors.onSurface }}
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
           <List.Item
             title="City"
             description={user.city || "N/A"}
-            left={(props) => <List.Icon {...props} icon="city" />}
+            left={(props) => <List.Icon {...props} icon="city" color={theme.colors.primary} />}
+            titleStyle={{ color: theme.colors.onSurface }}
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
         </Surface>
 
-        <View style={styles.actions}>
+        <View style={themedStyles.actions}>
           <Button
             mode="outlined"
             onPress={handleEdit}
-            style={styles.actionButton}
-            contentStyle={styles.actionContent}
+            style={themedStyles.actionButton}
+            contentStyle={themedStyles.actionContent}
+            textColor={theme.colors.primary} 
+            theme={{ colors: { outline: theme.colors.primary } }} 
           >
             Edit Profile
           </Button>
@@ -141,8 +143,10 @@ export default function ProfileScreen() {
           <Button
             mode="outlined"
             onPress={() => router.push('/(private)/settings')}
-            style={styles.actionButton}
-            contentStyle={styles.actionContent}
+            style={themedStyles.actionButton}
+            contentStyle={themedStyles.actionContent}
+            textColor={theme.colors.primary}
+            theme={{ colors: { outline: theme.colors.primary } }}
           >
             Settings
           </Button>
@@ -150,8 +154,10 @@ export default function ProfileScreen() {
           <Button
             mode="contained"
             onPress={handleLogout}
-            style={[styles.actionButton, styles.logoutButton]}
-            contentStyle={styles.actionContent}
+            style={themedStyles.actionButton}
+            contentStyle={themedStyles.actionContent}
+            buttonColor={theme.colors.error} 
+            textColor={theme.colors.onError}
           >
             Logout
           </Button>
@@ -161,28 +167,30 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+
+const getThemedStyles = (theme) => StyleSheet.create({
   safe: {
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
   container: {
     flex: 1,
     padding: 20,
     justifyContent: "flex-start",
+    backgroundColor: theme.colors.background,
   },
   loadingContainer: {
-    // DODATO: stil za loading
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: theme.colors.background,
   },
   headerSurface: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     borderRadius: 16,
-    elevation: 4,
-    backgroundColor: "#F3E8FF",
+    backgroundColor: theme.colors.primaryContainer, 
     marginBottom: 20,
   },
   avatarWrap: {
@@ -192,7 +200,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 14,
-    backgroundColor: "#FFF7ED",
+    backgroundColor: theme.colors.surfaceVariant,
     elevation: 2,
   },
   avatarImage: {
@@ -204,16 +212,16 @@ const styles = StyleSheet.create({
   },
   name: {
     fontWeight: "700",
-    color: "#111827",
+    color: theme.colors.onPrimaryContainer,
   },
   role: {
     marginTop: 4,
-    color: "#6B7280",
+    color: theme.colors.onSurfaceVariant,
   },
   infoCard: {
     borderRadius: 12,
     elevation: 2,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.colors.surface,
     marginBottom: 20,
     overflow: "hidden",
   },
@@ -228,7 +236,5 @@ const styles = StyleSheet.create({
   actionContent: {
     paddingVertical: 10,
   },
-  logoutButton: {
-    backgroundColor: "#FFD6E0",
-  },
+
 });

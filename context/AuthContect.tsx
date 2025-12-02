@@ -8,12 +8,11 @@ import React, {
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/auth-js";
 
-// Definišemo tip za podatke korisnika koje prosleđujemo pri registraciji
-// Ovo obezbeđuje bolju tipsku sigurnost.
+
 type UserProfileData = {
   full_name: string;
   city: string;
-  type: 'parent' | 'babysitter'; // Koristimo specifične literale za bolju kontrolu
+  type: 'parent' | 'babysitter'; 
 }
 
 type AuthContextType = {
@@ -21,7 +20,7 @@ type AuthContextType = {
   signUp: (
     email: string,
     password: string,
-    profileData: UserProfileData // Objedinjujemo dodatne podatke u jedan objekat
+    profileData: UserProfileData 
   ) => Promise<{ error?: string }>;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   session: Session | null;

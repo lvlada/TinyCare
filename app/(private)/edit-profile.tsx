@@ -1,20 +1,22 @@
 import { useAuth } from "@/context/AuthContect";
 import { useUser } from "@/hooks/useUser";
 import React, { useEffect } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Button,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
+import {
+  Text,
+  TextInput,
+  Button,
+  ActivityIndicator,
+  useTheme,
+  Surface,
+} from "react-native-paper";
+
 const SettingsScreen = () => {
+
+  const theme = useTheme();
   const { signOut } = useAuth();
   const router = useRouter();
 
@@ -77,11 +79,18 @@ const SettingsScreen = () => {
     router.push("/(private)/profile");
   };
 
+  // Kreiranje dinamičkih stilova
+  const themedStyles = getThemedStyles(theme);
+
   if (userLoading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ActivityIndicator size="large" color="#4F46E5" />
-        <Text style={{ marginTop: 10, color: "#666" }}>
+      <SafeAreaView style={themedStyles.container}>
+        <ActivityIndicator
+          size="large"
+          color={theme.colors.primary}
+          animating={true}
+        />
+        <Text style={themedStyles.loadingText}>
           Učitavanje podataka...
         </Text>
       </SafeAreaView>
@@ -90,171 +99,232 @@ const SettingsScreen = () => {
 
   if (!user) {
     return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.errorText}>Korisnički podaci nisu dostupni.</Text>
-        <Button title="Logout" onPress={handleSignout} color="#FF5252" />
+      <SafeAreaView style={themedStyles.container}>
+        <Text style={themedStyles.errorText}>Korisnički podaci nisu dostupni.</Text>
+        <Button
+          mode="contained"
+          onPress={handleSignout}
+          buttonColor={theme.colors.error}
+          style={{ marginTop: 20 }}
+          labelStyle={{ fontWeight: 'bold' }} 
+        >
+          Logout
+        </Button>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.userInfo}>
+    <SafeAreaView style={themedStyles.container}>
+      <Surface style={themedStyles.userInfo} elevation={4}>
         {isEditing ? (
           <>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Ime i Prezime:</Text>
+            <View style={themedStyles.inputGroup}>
+              <Text style={themedStyles.label}>Ime i Prezime:</Text>
               <TextInput
-                style={styles.input}
+                style={themedStyles.input}
                 value={fullName}
                 onChangeText={setFullName}
                 placeholder="Unesite ime i prezime"
+                mode="outlined"
+                keyboardAppearance={theme.dark ? 'dark' : 'light'}
               />
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Grad:</Text>
+            <View style={themedStyles.inputGroup}>
+              <Text style={themedStyles.label}>Grad:</Text>
               <TextInput
-                style={styles.input}
+                style={themedStyles.input}
                 value={city}
                 onChangeText={setCity}
                 placeholder="Unesite grad"
+                mode="outlined"
+                keyboardAppearance={theme.dark ? 'dark' : 'light'}
               />
             </View>
 
-            <View style={styles.buttonRow}>
-              <TouchableOpacity
-                style={[styles.button, styles.saveButton]}
+            <View style={themedStyles.buttonRow}>
+              <Button
+                mode="contained"
                 onPress={handleSave}
+                buttonColor={theme.colors.primary}
+                style={themedStyles.flexButton}
+                labelStyle={themedStyles.buttonText}
+                contentStyle={themedStyles.buttonContent}
               >
-                <Text style={styles.buttonText}>Sačuvaj</Text>
-              </TouchableOpacity>
+                Sačuvaj
+              </Button>
 
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
+              <Button
+                mode="contained"
                 onPress={handleCancel}
+                buttonColor={theme.colors.error}
+                style={themedStyles.flexButton}
+                labelStyle={themedStyles.buttonText}
+                contentStyle={themedStyles.buttonContent}
               >
-                <Text style={styles.buttonText}>Odustani</Text>
-              </TouchableOpacity>
+                Odustani
+              </Button>
             </View>
           </>
         ) : (
           <>
-            <View style={styles.field}>
-              <Text style={styles.label}>Ime i Prezime:</Text>
-              <Text style={styles.value}>{user.full_name}</Text>
+            <View style={themedStyles.field}>
+              <Text style={themedStyles.labelBold}>Full Name:</Text>
+              <Text style={themedStyles.value}>{user.full_name}</Text>
             </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Grad:</Text>
-              <Text style={styles.value}>{user.city}</Text>
+            <View style={themedStyles.field}>
+              <Text style={themedStyles.labelBold}>City:</Text>
+              <Text style={themedStyles.value}>{user.city}</Text>
             </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Email:</Text>
-              <Text style={styles.value}>{user.email}</Text>
+            <View style={themedStyles.field}>
+              <Text style={themedStyles.labelBold}>Email:</Text>
+              <Text style={themedStyles.value}>{user.email}</Text>
             </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Tip Korisnika:</Text>
-              <Text style={styles.value}>{user.type}</Text>
+            <View style={themedStyles.field}>
+              <Text style={themedStyles.labelBold}>Type of user:</Text>
+              <Text style={themedStyles.value}>{user.type}</Text>
             </View>
 
-            <TouchableOpacity
-              style={[styles.button, styles.editButton]}
+            <Button
+              mode="contained"
               onPress={handleEditToggle}
+              buttonColor={theme.colors.primary}
+              style={themedStyles.editButton}
+              labelStyle={themedStyles.buttonText}
+              contentStyle={themedStyles.buttonContentLarge} 
             >
-              <Text style={styles.buttonText}>Uredi Profil</Text>
-            </TouchableOpacity>
+              Uredi Profil
+            </Button>
           </>
         )}
+      </Surface>
+      
+      <View style={themedStyles.bottomActions}>
+        <Button
+          mode="outlined"
+          onPress={handleBack}
+          textColor={theme.colors.onBackground}
+          style={themedStyles.bottomButton}
+          contentStyle={themedStyles.buttonContentLarge}
+        >
+          Nazad
+        </Button>
+        <Button
+          mode="contained"
+          onPress={handleSignout}
+          buttonColor={theme.colors.error}
+          style={themedStyles.bottomButton}
+          contentStyle={themedStyles.buttonContentLarge}
+        >
+          Odjava
+        </Button>
       </View>
-      <Button title="Back" onPress={handleBack} color="#000" />
-      <Button title="Odjava" onPress={handleSignout} color="#FF5252" />
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  userInfo: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 30,
-    width: "100%",
-    maxWidth: 400,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  label: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 10,
-    marginBottom: 4,
-    fontWeight: "500",
-  },
-  value: {
-    fontSize: 18,
-    color: "#333",
-    fontWeight: "bold",
-  },
-  editButton: {
-    backgroundColor: "#4F46E5",
-    marginTop: 10,
-  },
-  saveButton: {
-    backgroundColor: "#10B981",
-    flex: 1,
-  },
-  cancelButton: {
-    backgroundColor: "#EF4444",
-    flex: 1,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    gap: 10,
-    marginTop: 10,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  button: {
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: "#f9f9f9",
-  },
-  errorText: {
-    color: "#FF5252",
-    fontSize: 16,
-    textAlign: "center",
-  },
-  field: {
-    marginBottom: 16,
-  },
-});
+
+const getThemedStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+      justifyContent: "flex-start",
+      alignItems: "center",
+      padding: 20,
+    },
+    loadingText: {
+      marginTop: 10,
+      color: theme.colors.onSurfaceVariant,
+    },
+    userInfo: {
+      backgroundColor: theme.colors.surface,
+      padding: 20,
+      borderRadius: 12,
+      marginBottom: 30,
+      width: "100%",
+      maxWidth: 400,
+      shadowColor: theme.colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: theme.dark ? 0.4 : 0.1,
+      shadowRadius: 4,
+      elevation: 4,
+    },
+    label: {
+      fontSize: 14,
+      color: theme.colors.onSurfaceVariant,
+      marginTop: 10,
+      marginBottom: 4,
+      fontWeight: "500",
+    },
+    labelBold: { 
+      fontSize: 14,
+      color: theme.colors.onSurfaceVariant,
+      marginTop: 0, 
+      marginBottom: 4,
+      fontWeight: "700", 
+    },
+    value: {
+      fontSize: 18,
+      color: theme.colors.onSurface,
+      fontWeight: "700", 
+    },
+    field: {
+      marginBottom: 24, 
+    },
+    editButton: {
+      marginTop: 24, 
+    },
+    buttonRow: {
+      flexDirection: "row",
+      gap: 16,
+      marginTop: 24,
+    },
+    flexButton: {
+      flex: 1,
+      borderRadius: 8,
+    },
+    buttonContent: { 
+      paddingVertical: 12, 
+    },
+    buttonText: {
+      color: theme.colors.background,
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+    buttonContentLarge: { 
+      paddingVertical: 14, 
+    },
+    bottomActions: {
+      width: "100%",
+      maxWidth: 400,
+      marginTop: 'auto',
+      alignItems: 'center',
+    },
+    bottomButton: {
+      width: "70%",
+      maxWidth: 300,
+      marginBottom: 12,
+      borderRadius: 24,
+    },
+    errorText: {
+      color: theme.colors.error,
+      fontSize: 16,
+      textAlign: "center",
+    },
+    inputGroup: {
+      marginBottom: 16,
+    },
+    input: {
+      backgroundColor: theme.colors.surface,
+      paddingHorizontal: 0,
+      paddingVertical: 0,
+      fontSize: 16,
+    },
+  });
 
 export default SettingsScreen;
