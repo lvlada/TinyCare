@@ -114,7 +114,6 @@ export default function DashboardScreen() {
         </Text>
       </View>
 
-      {/* FLATLIST */}
       <FlatList
         data={babysiters}
         renderItem={renderItem}

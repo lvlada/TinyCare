@@ -10,10 +10,8 @@ import {
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
 import { signupSchema, SignupSchema } from "@/schemas/signupSchema";
 import { useAuth } from "@/context/AuthContect";
 
@@ -28,10 +26,9 @@ export default function SignupScreen() {
   const [visible, setVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   
-  const onDismissSnackBar = () => setVisible(false); // Funkcija za zatvaranje
+  const onDismissSnackBar = () => setVisible(false); 
 
   const {
-    // Uklonjeno: register (jer se koristi setValue)
     handleSubmit,
     setValue,
     formState: { errors },
@@ -40,21 +37,19 @@ export default function SignupScreen() {
   });
 
   const onSubmit = async (data: SignupSchema) => {
-    // 1. Priprema podataka za profil
     const profileData = {
       full_name: data.full_name,
       city: data.city,
       type: role,
     };
     
-    // 2. Pozivanje ažurirane signUp funkcije
+
     const { error } = await signUp(
       data.email,
       data.password,
       profileData
     );
 
-    // 3. Upravljanje greškama i navigacija (koristeći Snackbar)
     if (error) {
         console.error("Greška pri registraciji:", error);
         
@@ -70,7 +65,6 @@ export default function SignupScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <View style={styles.container}>
 
-        {/* LOGO */}
         <View style={styles.logoWrap}>
           <Image
             source={require("../../assets/images/baby_halo_logo.png")}
@@ -79,13 +73,11 @@ export default function SignupScreen() {
           />
         </View>
 
-        {/* CARD */}
         <Surface style={styles.card}>
           <Text variant="headlineSmall" style={styles.title}>
             Create an Account
           </Text>
 
-          {/* ROLE SELECTOR */}
           <View style={styles.roleRow}>
             <Button
               mode={role === "parent" ? "contained" : "outlined"}
@@ -104,7 +96,6 @@ export default function SignupScreen() {
             </Button>
           </View>
 
-          {/* FULL NAME */}
           <TextInput
             label="Full Name"
             mode="outlined"
@@ -115,19 +106,19 @@ export default function SignupScreen() {
             <Text style={styles.error}>{errors.full_name.message}</Text>
           )}
 
-          {/* EMAIL */}
           <TextInput
             label="Email"
             mode="outlined"
             keyboardType="email-address"
             style={styles.input}
             onChangeText={(text) => setValue("email", text)}
+            autoCapitalize="none" 
+            autoCorrect={false}
           />
           {errors.email && (
             <Text style={styles.error}>{errors.email.message}</Text>
           )}
 
-          {/* PASSWORD */}
           <TextInput
             label="Password"
             mode="outlined"
@@ -139,7 +130,6 @@ export default function SignupScreen() {
             <Text style={styles.error}>{errors.password.message}</Text>
           )}
 
-          {/* CONFIRM PASSWORD */}
           <TextInput
             label="Confirm Password"
             mode="outlined"
@@ -151,7 +141,6 @@ export default function SignupScreen() {
             <Text style={styles.error}>{errors.confirmPassword.message}</Text>
           )}
 
-          {/* CITY */}
           <TextInput
             label="City"
             mode="outlined"
@@ -162,7 +151,6 @@ export default function SignupScreen() {
             <Text style={styles.error}>{errors.city.message}</Text>
           )}
 
-          {/* SUBMIT */}
           <Button
             mode="contained"
             style={styles.signupButton}
@@ -173,7 +161,6 @@ export default function SignupScreen() {
             Sign Up
           </Button>
 
-          {/* LOGIN LINK */}
           <View style={styles.loginLinkWrap}>
             <Text>Already have an account?</Text>
             <Button mode="text" onPress={() => router.push("/(public)/login")}>
@@ -183,7 +170,6 @@ export default function SignupScreen() {
         </Surface>
       </View>
       
-      {/* SNACKBAR KOMPONENTA ZA PRIKAZ GREŠAKA */}
       <Snackbar
         visible={visible}
         onDismiss={onDismissSnackBar}

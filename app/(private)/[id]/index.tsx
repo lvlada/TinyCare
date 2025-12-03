@@ -1,5 +1,5 @@
-import { View, Text, Button, Pressable } from "react-native";
-import {useRouter, Link, useLocalSearchParams} from 'expo-router';
+import { View, Text, Pressable } from "react-native";
+import {useRouter, useLocalSearchParams} from 'expo-router';
 
 
 export default function ListPage() {
