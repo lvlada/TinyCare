@@ -1,91 +1,119 @@
-import React from "react";
-import { View, StyleSheet, Image, FlatList } from "react-native";
-import { Text, Surface, Button, useTheme, Avatar } from "react-native-paper";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Image, FlatList, ActivityIndicator } from "react-native";
+import {
+  Text,
+  Surface,
+  Button,
+  useTheme,
+  Avatar,
+  TextInput,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { useAuth, Babysitter as ContextBabysitter } from "@/context/AuthContect"; 
+
+interface DashboardBabysitter extends ContextBabysitter {
+  available: string;
+}
+
 
 export default function DashboardScreen() {
   const theme = useTheme();
   const router = useRouter();
+  
+  const { userProfile, babysitters: contextBabysitters, babysittersLoading, loadBabysitters } = useAuth();
 
-  const babysiters = [
-    {
-      id: "1",
-      name: "Anna Smith",
-      rating: 4.9,
-      available: "Dec 1, 2 PM - 6 PM",
-    },
-    {
-      id: "2",
-      name: "Lucas Brown",
-      rating: 4.8,
-      available: "Dec 2, 10 AM - 3 PM",
-    },
-    {
-      id: "3",
-      name: "Sophia White",
-      rating: 5.0,
-      available: "Dec 3, 1 PM - 5 PM",
-    },
-    {
-      id: "4",
-      name: "Oliver Green",
-      rating: 4.7,
-      available: "Dec 4, 9 AM - 12 PM",
-    },
-    {
-      id: "5",
-      name: "Emma Johnson",
-      rating: 4.9,
-      available: "Dec 5, 2 PM - 6 PM",
-    },
-    {
-      id: "6",
-      name: "Liam Davis",
-      rating: 4.6,
-      available: "Dec 6, 10 AM - 2 PM",
-    },
-    {
-      id: "7",
-      name: "Ava Wilson",
-      rating: 5.0,
-      available: "Dec 7, 1 PM - 5 PM",
-    },
-    {
-      id: "8",
-      name: "Noah Miller",
-      rating: 4.8,
-      available: "Dec 8, 3 PM - 7 PM",
-    },
-  ];
+  const firstName = userProfile?.full_name
+    ? userProfile.full_name.split(" ")[0]
+    : "User";
 
-  const renderItem = ({ item }: any) => (
-    <Surface style={styles.card}>
+  const [searchText, setSearchText] = useState("");
+  const [filteredBabysiters, setFilteredBabysiters] = useState<DashboardBabysitter[]>([]);
+
+  const ALL_BABYSITTERS_FOR_DASHBOARD: DashboardBabysitter[] = contextBabysitters.map(b => ({
+      ...b,
+      rating: b.rating, 
+      available: "Ask for availability", 
+  }));
+
+  const renderRatingDisplay = (rating: number | null) => {
+    const value = rating ?? 0;
+    
+    if (value > 0) {
+      const ratingText = value.toFixed(value % 1 !== 0 ? 1 : 0);
+      return (
+        <Text
+          variant="bodySmall"
+          style={{ color: theme.colors.onSurfaceVariant }}
+        >
+          ⭐ Rating: {ratingText} 
+        </Text>
+      );
+    }
+    
+    return (
+      <Text
+        variant="bodySmall"
+        style={{ color: theme.colors.onSurfaceVariant }}
+      >
+        ⭐ Rating: N/A
+      </Text>
+    );
+  };
+
+
+  useEffect(() => {
+    if (searchText.trim() === "") {
+      setFilteredBabysiters([]);
+    } else {
+      const results = ALL_BABYSITTERS_FOR_DASHBOARD.filter((babysitter) =>
+        babysitter.full_name.toLowerCase().includes(searchText.toLowerCase().trim())
+      );
+      setFilteredBabysiters(results);
+    }
+  }, [searchText, ALL_BABYSITTERS_FOR_DASHBOARD]);
+
+  
+
+  const renderItem = ({ item }: { item: DashboardBabysitter }) => ( 
+    <Surface
+      style={[
+        styles.card,
+        { backgroundColor: theme.colors.elevation.level1 },
+      ]}
+    >
       <View style={styles.cardRow}>
         <Avatar.Text
           size={50}
-          label={item.name
-            .split(" ")
-            .map((n: string) => n[0])
-            .join("")}
-          style={styles.avatar}
+          label={item.full_name.split(" ").map((n) => n[0]).join("")}
+          style={{ backgroundColor: theme.colors.secondaryContainer }}
+          color={theme.colors.onSecondaryContainer}
         />
+
         <View style={styles.cardInfo}>
-          <Text variant="titleMedium" style={styles.name}>
-            {item.name}
+          <Text variant="titleMedium" style={{ color: theme.colors.onSurface }}>
+            {item.full_name}
           </Text>
-          <Text variant="bodySmall" style={styles.info}>
-            Rating: {item.rating}
-          </Text>
-          <Text variant="bodySmall" style={styles.info}>
+          
+          {renderRatingDisplay(item.rating)}
+
+          <Text
+            variant="bodySmall"
+            style={{ color: theme.colors.onSurfaceVariant }}
+          >
             Available: {item.available}
           </Text>
         </View>
       </View>
+
       <Button
         mode="contained"
-        style={styles.button}
-        contentStyle={styles.buttonContent}
+        style={{
+          borderRadius: 24,
+          backgroundColor: theme.colors.primaryContainer,
+        }}
+        textColor={theme.colors.onPrimaryContainer}
+        contentStyle={{ paddingVertical: 8 }}
         onPress={() =>
           router.push({
             pathname: "/(private)/[id]",
@@ -106,20 +134,67 @@ export default function DashboardScreen() {
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text variant="headlineSmall" style={styles.greeting}>
-          Hello, Vladimir!
+
+        <Text
+          variant="headlineSmall"
+          style={{ color: theme.colors.primary, fontWeight: "700" }}
+        >
+          Hello, {firstName}!
         </Text>
-        <Text variant="bodyMedium" style={styles.subtext}>
-          Browse available Babysiters
+
+        <Text
+          variant="bodyMedium"
+          style={{ color: theme.colors.onSurfaceVariant }}
+        >
+          Browse available Babysitters
         </Text>
       </View>
 
-      <FlatList
-        data={babysiters}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
+      <TextInput
+        label="Search Babysitters by Name"
+        mode="outlined"
+        style={styles.searchInput}
+        value={searchText}
+        onChangeText={setSearchText}
+        textColor={theme.colors.onSurface}
       />
+
+
+      {babysittersLoading && searchText.trim() === "" ? (
+        <View style={styles.noResultsContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={{ marginTop: 10, color: theme.colors.onSurfaceVariant }}>Loading Babysitters...</Text>
+        </View>
+      ) : filteredBabysiters.length > 0 ? (
+        <FlatList
+          data={filteredBabysiters}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+        />
+      ) : (
+        <View style={styles.noResultsContainer}>
+          <Text
+            style={{
+              fontSize: 16,
+              textAlign: "center",
+              color: theme.colors.onSurfaceVariant,
+            }}
+          >
+            {searchText.trim() === ""
+              ? "Start typing a name to search for a Babysitter."
+              : `No Babysitters found for '${searchText}'.`}
+          </Text>
+
+          {/* Opcionalno dodavanje dugmeta za ručno osvežavanje ako nema rezultata */}
+          {contextBabysitters.length === 0 && searchText.trim() === "" && (
+             <Button mode="outlined" onPress={loadBabysitters} style={{marginTop: 15}}>
+                Retry Load
+             </Button>
+          )}
+          
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -135,12 +210,9 @@ const styles = StyleSheet.create({
     marginBottom: -50,
     marginTop: -40,
   },
-  greeting: {
-    fontWeight: "700",
-    color: "#4F46E5",
-  },
-  subtext: {
-    color: "#6B7280",
+  searchInput: {
+    marginHorizontal: 20,
+    marginBottom: 16,
   },
   listContent: {
     paddingHorizontal: 20,
@@ -149,34 +221,21 @@ const styles = StyleSheet.create({
   card: {
     padding: 16,
     borderRadius: 20,
-    backgroundColor: "#FFF7ED",
     marginBottom: 16,
-    elevation: 4,
   },
   cardRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
   },
-  avatar: {
-    backgroundColor: "#BEECCF",
-  },
   cardInfo: {
     marginLeft: 12,
     flex: 1,
   },
-  name: {
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  info: {
-    color: "#6B7280",
-  },
-  button: {
-    borderRadius: 24,
-    backgroundColor: "#BEECCF",
-  },
-  buttonContent: {
-    paddingVertical: 8,
+  noResultsContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 40,
   },
 });

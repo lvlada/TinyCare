@@ -41,7 +41,6 @@ export default function SettingsScreen() {
           Podešavanja
         </Text>
 
-        {/* Tema */}
         <Surface style={[themedStyles.card, { backgroundColor: theme.colors.surface }]}>
           <List.Item
             title="Tamna Tema (Dark Mode)"

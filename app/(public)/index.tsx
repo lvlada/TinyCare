@@ -8,6 +8,18 @@ export default function HomeScreen() {
   const router = useRouter();
   const theme = useTheme();
 
+    const { session, loading } = useAuth();
+
+  // if (loading) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
+  // if (session) {
+  //   return <Redirect href="/(private)/" />;
+  // }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>

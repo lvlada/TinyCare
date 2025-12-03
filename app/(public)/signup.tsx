@@ -58,7 +58,7 @@ export default function SignupScreen() {
         return; 
     }
 
-    router.push("/(tabs)/home");
+    router.push("/(public)/login");
   };
 
   return (

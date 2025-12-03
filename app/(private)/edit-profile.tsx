@@ -79,7 +79,7 @@ const SettingsScreen = () => {
     router.push("/(private)/profile");
   };
 
-  // Kreiranje dinamičkih stilova
+
   const themedStyles = getThemedStyles(theme);
 
   if (userLoading) {

@@ -9,7 +9,9 @@ const lightTheme = {
     background: "#F7F7F7",
     surface: "#FFFFFF",
     text: "#000",
-    disabled: "rgba(0,0,0,0.5)", 
+    disabled: "rgba(0,0,0,0.5)",
+    secondaryContainer: "#BEECCF",
+    onSecondaryContainer: "#063927",
   },
 };
 
@@ -21,10 +23,11 @@ const darkTheme = {
     background: "#121212",
     surface: "#1E1E1E",
     text: "#FFF",
-    disabled: "rgba(255,255,255,0.4)", 
+    disabled: "rgba(255,255,255,0.4)",
+    secondaryContainer: "#164E36",
+    onSecondaryContainer: "#DFF7E8",
   },
 };
-
 
 const ThemeContext = createContext({
   isDarkTheme: false,
@@ -37,7 +40,10 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   const toggleTheme = () => setIsDarkTheme((prev) => !prev);
 
-  const theme = useMemo(() => (isDarkTheme ? darkTheme : lightTheme), [isDarkTheme]);
+  const theme = useMemo(
+    () => (isDarkTheme ? darkTheme : lightTheme),
+    [isDarkTheme]
+  );
 
   return (
     <ThemeContext.Provider value={{ isDarkTheme, toggleTheme, theme }}>

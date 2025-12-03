@@ -38,7 +38,7 @@ export default function LoginScreen() {
         return; 
     }
 
-    router.replace("/(private)/(tabs)/home");
+    router.replace("/(private)");
   };
 
   const handleSignup = () => {

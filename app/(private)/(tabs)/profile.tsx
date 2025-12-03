@@ -96,7 +96,6 @@ export default function ProfileScreen() {
           </View>
         </Surface>
 
-
         <Surface style={themedStyles.infoCard} elevation={2}>
           <List.Item
             title="Email"
